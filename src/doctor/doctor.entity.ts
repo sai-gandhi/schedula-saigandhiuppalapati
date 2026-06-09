@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity, PrimaryGeneratedColumn, Column,
+  OneToOne, JoinColumn, CreateDateColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity('doctor_profiles')
@@ -6,7 +9,7 @@ export class DoctorProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User, (user) => user.doctorProfile)
+  @OneToOne(() => User, (u) => u.doctorProfile, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 
@@ -22,7 +25,7 @@ export class DoctorProfile {
   @Column()
   qualification: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   consultationFee: number;
 
   @Column()
@@ -30,6 +33,9 @@ export class DoctorProfile {
 
   @Column({ nullable: true })
   profileDetails: string;
+
+  @Column({ default: true })
+  isAvailable: boolean;
 
   @CreateDateColumn()
   created_at: Date;
