@@ -11,17 +11,18 @@ import { PatientProfile } from './patient/patient.entity';
 
 @Module({
   imports: [
-   TypeOrmModule.forRootAsync({
-  inject: [ConfigService],
-  useFactory: (config: ConfigService) => ({
-    type: 'postgres',
-    url: config.get('DATABASE_URL'),
-    entities: [User, DoctorProfile, PatientProfile],
-    synchronize: false,
-    migrations: ['dist/database/migrations/*.js'],
-    ssl: { rejectUnauthorized: false },
-  }),
-}),
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        url: config.get('DATABASE_URL'),
+        entities: [User, DoctorProfile, PatientProfile],
+        synchronize: false,
+        ssl: { rejectUnauthorized: false },
+      }),
+    }),
     AuthModule,
     UsersModule,
     DoctorModule,
