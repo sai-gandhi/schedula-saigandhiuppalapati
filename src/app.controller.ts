@@ -4,6 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get()
   getStatus() {
-    return 'Schedula API is running successfully! 🚀';
+    return 'Schedula API is running successfully! 🚀 | Developer: Uppalapati Sai Gandhi';
   }
 }
