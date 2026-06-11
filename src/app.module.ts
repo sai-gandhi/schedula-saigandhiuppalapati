@@ -8,6 +8,9 @@ import { PatientModule } from './patient/patient.module';
 import { User } from './users/user.entity';
 import { DoctorProfile } from './doctor/doctor.entity';
 import { PatientProfile } from './patient/patient.entity';
+import { AvailabilityModule } from './availability/availability.module';
+import { RecurringAvailability } from './availability/recurring-availability.entity';
+import { CustomAvailability } from './availability/custom-availability.entity';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { PatientProfile } from './patient/patient.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User, DoctorProfile, PatientProfile],
+        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
         synchronize: false,
         migrations: ['dist/database/migrations/*.js'],
       }),
@@ -30,6 +33,7 @@ import { PatientProfile } from './patient/patient.entity';
     UsersModule,
     DoctorModule,
     PatientModule,
+    AvailabilityModule, 
   ],
 })
 export class AppModule {}
