@@ -5,9 +5,12 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { PatientModule } from './patient/patient.module';
+import { AvailabilityModule } from './availability/availability.module';
 import { User } from './users/user.entity';
 import { DoctorProfile } from './doctor/doctor.entity';
 import { PatientProfile } from './patient/patient.entity';
+import { RecurringAvailability } from './availability/recurring-availability.entity';
+import { CustomAvailability } from './availability/custom-availability.entity';
 import { AppController } from './app.controller';
 
 @Module({
@@ -19,7 +22,7 @@ import { AppController } from './app.controller';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         url: config.get('DATABASE_URL'),
-        entities: [User, DoctorProfile, PatientProfile],
+        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
         synchronize: false,
         ssl: { rejectUnauthorized: false },
       }),
@@ -28,6 +31,7 @@ import { AppController } from './app.controller';
     UsersModule,
     DoctorModule,
     PatientModule,
+    AvailabilityModule,
   ],
   controllers: [AppController],
 })

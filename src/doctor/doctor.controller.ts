@@ -15,10 +15,19 @@ import { QueryDoctorDto } from './dto/query-doctor.dto';
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}
 
-  // ── Public routes (no auth needed) ──────────────────────
+  // ── Public routes ────────────────────────────────────────
+
   @Get()
   findAll(@Query() query: QueryDoctorDto) {
     return this.doctorService.findAll(query);
+  }
+
+  // IMPORTANT: 'profile' must come before ':id'
+  @Get('profile')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('DOCTOR')
+  getProfile(@Request() req) {
+    return this.doctorService.findByUser(req.user);
   }
 
   @Get(':id')
@@ -26,19 +35,13 @@ export class DoctorController {
     return this.doctorService.findById(id);
   }
 
-  // ── Protected routes (DOCTOR only) ──────────────────────
+  // ── Protected routes ─────────────────────────────────────
+
   @Post('profile')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('DOCTOR')
   create(@Request() req, @Body() dto: CreateDoctorDto) {
     return this.doctorService.create(req.user, dto);
-  }
-
-  @Get('profile')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('DOCTOR')
-  getProfile(@Request() req) {
-    return this.doctorService.findByUser(req.user);
   }
 
   @Patch('profile')
