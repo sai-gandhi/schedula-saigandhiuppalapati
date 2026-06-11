@@ -5,35 +5,34 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { PatientModule } from './patient/patient.module';
+import { AvailabilityModule } from './availability/availability.module';
 import { User } from './users/user.entity';
 import { DoctorProfile } from './doctor/doctor.entity';
 import { PatientProfile } from './patient/patient.entity';
-import { AvailabilityModule } from './availability/availability.module';
 import { RecurringAvailability } from './availability/recurring-availability.entity';
 import { CustomAvailability } from './availability/custom-availability.entity';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get('DB_USERNAME'),
-        password: config.get('DB_PASSWORD'),
-        database: config.get('DB_NAME'),
+        url: config.get('DATABASE_URL'),
         entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
         synchronize: false,
-        migrations: ['dist/database/migrations/*.js'],
+        ssl: { rejectUnauthorized: false },
       }),
     }),
     AuthModule,
     UsersModule,
     DoctorModule,
     PatientModule,
-    AvailabilityModule, 
+    AvailabilityModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
