@@ -8,22 +8,20 @@ import { PatientModule } from './patient/patient.module';
 import { User } from './users/user.entity';
 import { DoctorProfile } from './doctor/doctor.entity';
 import { PatientProfile } from './patient/patient.entity';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get('DB_USERNAME'),
-        password: config.get('DB_PASSWORD'),
-        database: config.get('DB_NAME'),
+        url: config.get('DATABASE_URL'),
         entities: [User, DoctorProfile, PatientProfile],
         synchronize: false,
-        migrations: ['dist/database/migrations/*.js'],
+        ssl: { rejectUnauthorized: false },
       }),
     }),
     AuthModule,
@@ -31,5 +29,6 @@ import { PatientProfile } from './patient/patient.entity';
     DoctorModule,
     PatientModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
