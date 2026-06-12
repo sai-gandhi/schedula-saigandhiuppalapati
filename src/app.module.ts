@@ -12,6 +12,8 @@ import { PatientProfile } from './patient/patient.entity';
 import { RecurringAvailability } from './availability/recurring-availability.entity';
 import { CustomAvailability } from './availability/custom-availability.entity';
 import { AppController } from './app.controller';
+import { SlotsModule } from './slots/slots.module';
+import { Slot } from './slots/slot.entity';
 
 @Module({
   imports: [
@@ -20,18 +22,19 @@ import { AppController } from './app.controller';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        url: config.get('DATABASE_URL'),
-        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
-        synchronize: false,
-        ssl: { rejectUnauthorized: false },
-      }),
+      type: 'postgres',
+      url: config.get('DATABASE_URL'),
+      entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability, Slot],
+      synchronize: false,
+      ssl: false,
+    }),
     }),
     AuthModule,
     UsersModule,
     DoctorModule,
     PatientModule,
     AvailabilityModule,
+    SlotsModule,
   ],
   controllers: [AppController],
 })
