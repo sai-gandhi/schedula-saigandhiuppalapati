@@ -171,9 +171,9 @@ export class AvailabilityService {
       };
     }
 
-    const dayOfWeek = new Date(date)
-      .toLocaleDateString('en-US', { weekday: 'long' })
-      .toUpperCase();
+    const dayOfWeek = new Date(date + 'T00:00:00')
+  .toLocaleDateString('en-US', { weekday: 'long' })
+  .toUpperCase();
 
     const recurringSlots = await this.recurringRepo.find({
       where: {
