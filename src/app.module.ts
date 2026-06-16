@@ -16,6 +16,7 @@ import { SlotsModule } from './slots/slots.module';
 import { Slot } from './slots/slot.entity';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { Appointment } from './appointments/appointment.entity';
+import { SchedulingModule } from './scheduling/scheduling.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { Appointment } from './appointments/appointment.entity';
     AvailabilityModule,
     AppointmentsModule,  
     SlotsModule,
+    SchedulingModule,
   ],
   controllers: [AppController],
 })

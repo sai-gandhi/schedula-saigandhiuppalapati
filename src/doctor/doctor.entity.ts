@@ -2,6 +2,11 @@ import {
   Entity, PrimaryGeneratedColumn, Column,
   OneToOne, JoinColumn, CreateDateColumn,
 } from 'typeorm';
+
+export enum SchedulingType {
+  STREAM = 'STREAM',
+  WAVE = 'WAVE',
+}
 import { User } from '../users/user.entity';
 
 @Entity('doctor_profiles')
@@ -39,4 +44,11 @@ export class DoctorProfile {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @Column({
+  type: 'enum',
+  enum: SchedulingType,
+  default: SchedulingType.STREAM,
+})
+schedulingType!: SchedulingType;
 }
