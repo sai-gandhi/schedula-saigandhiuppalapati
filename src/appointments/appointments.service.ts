@@ -32,6 +32,11 @@ export class AppointmentsService {
     return target > now;
   }
 
+  private isValidUUID(id: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id);
+  }
+
   async create(
     patient: PatientProfile,
     dto: CreateAppointmentDto,
@@ -98,22 +103,38 @@ export class AppointmentsService {
   }
 
   async getMyAppointments(patient: PatientProfile): Promise<Appointment[]> {
-    return this.appointmentRepo.find({
+    const appointments = await this.appointmentRepo.find({
       where: { patient: { id: patient.id } },
       relations: { doctor: true },
       order: { date: 'DESC', startTime: 'DESC' },
     });
+
+    // Explicit empty-state: returns [] with 200 OK when patient
+    // has no appointments, rather than throwing an error.
+    // An empty list is a valid, expected state — not a "not found" case.
+    return appointments;
   }
 
   async getDoctorAppointments(doctor: DoctorProfile): Promise<Appointment[]> {
-    return this.appointmentRepo.find({
+    const appointments = await this.appointmentRepo.find({
       where: { doctor: { id: doctor.id } },
       relations: { patient: true },
       order: { date: 'DESC', startTime: 'DESC' },
     });
+
+    // Explicit empty-state: returns [] with 200 OK when doctor
+    // has no appointments booked yet.
+    return appointments;
   }
 
   async cancel(patient: PatientProfile, id: string): Promise<Appointment> {
+    //for reference
+    // Validate appointment ID format before querying DB
+    // to avoid raw UUID syntax errors from PostgreSQL
+    if (!this.isValidUUID(id)) {
+      throw new NotFoundException('Appointment not found');
+    }
+
     const appointment = await this.appointmentRepo.findOne({
       where: { id },
       relations: { patient: true, doctor: true },

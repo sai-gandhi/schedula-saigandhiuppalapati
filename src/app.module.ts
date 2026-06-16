@@ -36,8 +36,8 @@ import { Appointment } from './appointments/appointment.entity';
     DoctorModule,
     PatientModule,
     AvailabilityModule,
+    AppointmentsModule,  
     SlotsModule,
-    AppointmentsModule,
   ],
   controllers: [AppController],
 })

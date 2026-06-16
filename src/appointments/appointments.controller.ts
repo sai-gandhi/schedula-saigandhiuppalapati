@@ -46,7 +46,7 @@ export class AppointmentsController {
   }
 
   // Doctor views their appointments
-  @Get('doctor/appointments')
+  @Get('doctor-appointments')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('DOCTOR')
   async getDoctorAppointments(@Request() req) {
