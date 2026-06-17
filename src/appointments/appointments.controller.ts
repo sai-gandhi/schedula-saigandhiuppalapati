@@ -7,6 +7,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
 import { PatientService } from '../patient/patient.service';
 import { DoctorService } from '../doctor/doctor.service';
 
@@ -18,7 +19,6 @@ export class AppointmentsController {
     private doctorService: DoctorService,
   ) {}
 
-  // Patient books appointment
   @Post('appointment')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('PATIENT')
@@ -27,7 +27,6 @@ export class AppointmentsController {
     return this.appointmentsService.create(patient, dto);
   }
 
-  // Patient views their appointments
   @Get('appointment/my')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('PATIENT')
@@ -36,7 +35,6 @@ export class AppointmentsController {
     return this.appointmentsService.getMyAppointments(patient);
   }
 
-  // Patient cancels appointment
   @Patch('appointment/:id/cancel')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('PATIENT')
@@ -45,7 +43,18 @@ export class AppointmentsController {
     return this.appointmentsService.cancel(patient, id);
   }
 
-  // Doctor views their appointments
+  @Patch('appointment/:id/reschedule')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('PATIENT')
+  async reschedule(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dto: RescheduleAppointmentDto,
+  ) {
+    const patient = await this.patientService.findByUser(req.user);
+    return this.appointmentsService.reschedule(patient, id, dto);
+  }
+
   @Get('doctor-appointments')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('DOCTOR')

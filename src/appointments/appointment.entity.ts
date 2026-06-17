@@ -47,7 +47,6 @@ slot: Slot;
 schedulingType: string;
 
 @Column({ type: 'int', nullable: true })
-tokenNumber: number;
-
+tokenNumber: number | null;
 
 }
