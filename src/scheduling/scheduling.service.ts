@@ -1,6 +1,6 @@
 import {
   Injectable, NotFoundException,
-  BadRequestException,
+  BadRequestException, ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -37,6 +37,29 @@ export class SchedulingService {
     doctor: DoctorProfile,
     dto: SetSchedulingTypeDto,
   ): Promise<DoctorProfile> {
+    // Conflicting schedule check: block switching scheduling type while
+    // the doctor has active future bookings under the current type,
+    // since that would silently orphan/break those appointments.
+    if (dto.schedulingType !== doctor.schedulingType) {
+      const today = new Date().toISOString().split('T')[0];
+
+      const activeBookings = await this.slotRepo
+        .createQueryBuilder('slot')
+        .where('slot.doctorId = :doctorId', { doctorId: doctor.id })
+        .andWhere('slot.date >= :today', { today })
+        .andWhere(
+          '(slot.status = :booked OR slot.bookedCount > 0)',
+          { booked: SlotStatus.BOOKED },
+        )
+        .getCount();
+
+      if (activeBookings > 0) {
+        throw new ConflictException(
+          'Cannot change scheduling type while there are active future bookings. Resolve existing appointments first.',
+        );
+      }
+    }
+
     doctor.schedulingType = dto.schedulingType;
     return this.doctorService.save(doctor);
   }
@@ -55,6 +78,23 @@ export class SchedulingService {
 
     if (this.isPastDate(dto.date)) {
       throw new BadRequestException('Cannot generate slots for past dates');
+    }
+
+    // Conflicting schedule check: block regenerating slots for a date
+    // that already has active bookings, to avoid silently invalidating
+    // existing appointments via the delete-and-regenerate step below.
+    const existingBookedSlots = await this.slotRepo.count({
+      where: {
+        doctor: { id: doctor.id },
+        date: dto.date,
+        status: SlotStatus.BOOKED,
+      },
+    });
+
+    if (existingBookedSlots > 0) {
+      throw new ConflictException(
+        'Cannot regenerate slots for this date - existing bookings would be invalidated. Cancel or reschedule them first.',
+      );
     }
 
     const availability = await this.availabilityService.getByDate(
@@ -130,6 +170,22 @@ export class SchedulingService {
 
     if (this.isPastDate(dto.date)) {
       throw new BadRequestException('Cannot generate slots for past dates');
+    }
+
+    // Conflicting schedule check: block regenerating wave slots for a
+    // date that already has active bookings (bookedCount > 0), to avoid
+    // silently invalidating existing appointments via delete-and-regenerate.
+    const existingBookings = await this.slotRepo
+      .createQueryBuilder('slot')
+      .where('slot.doctorId = :doctorId', { doctorId: doctor.id })
+      .andWhere('slot.date = :date', { date: dto.date })
+      .andWhere('slot.bookedCount > 0')
+      .getCount();
+
+    if (existingBookings > 0) {
+      throw new ConflictException(
+        'Cannot regenerate wave slots for this date - existing bookings would be invalidated. Cancel or reschedule them first.',
+      );
     }
 
     const availability = await this.availabilityService.getByDate(
