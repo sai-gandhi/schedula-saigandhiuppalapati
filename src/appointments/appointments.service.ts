@@ -52,7 +52,7 @@ export class AppointmentsService {
     return d.toISOString().split('T')[0];
   }
 
-  // ── Booking (Day 8/9, unchanged) ──────────────────────────
+  // ── Booking (Day 8/9) ──────────────────────────────────────
 
   async create(
     patient: PatientProfile,
@@ -132,12 +132,6 @@ export class AppointmentsService {
     slot: Slot,
     dto: { date: string; startTime: string; endTime: string },
   ): Promise<Appointment> {
-    if (slot.bookedCount >= slot.maxCapacity) {
-      throw new ConflictException(
-        `Wave is full! Maximum capacity of ${slot.maxCapacity} patients reached`,
-      );
-    }
-
     const existingWaveBooking = await this.appointmentRepo.findOne({
       where: {
         patient: { id: patient.id },
@@ -150,18 +144,39 @@ export class AppointmentsService {
       throw new ConflictException('You have already booked this wave window');
     }
 
-    const tokenNumber = slot.bookedCount + 1;
-    slot.bookedCount = tokenNumber;
+    // Atomic increment: only succeeds if bookedCount < maxCapacity at the
+    // moment of the UPDATE. Prevents race conditions where two concurrent
+    // requests both pass an earlier read-based check and overbook the wave.
+    const result = await this.slotRepo
+      .createQueryBuilder()
+      .update(Slot)
+      .set({ bookedCount: () => '"bookedCount" + 1' })
+      .where('id = :id', { id: slot.id })
+      .andWhere('"bookedCount" < "maxCapacity"')
+      .execute();
 
-    if (slot.bookedCount >= slot.maxCapacity) {
-      slot.status = SlotStatus.BOOKED;
+    if (result.affected === 0) {
+      throw new ConflictException(
+        `Wave is full! Maximum capacity of ${slot.maxCapacity} patients reached`,
+      );
     }
-    await this.slotRepo.save(slot);
+
+    const updatedSlot = await this.slotRepo.findOneBy({ id: slot.id });
+    if (!updatedSlot) {
+      throw new NotFoundException('Slot not found after update');
+    }
+
+    const tokenNumber = updatedSlot.bookedCount;
+
+    if (updatedSlot.bookedCount >= updatedSlot.maxCapacity) {
+      updatedSlot.status = SlotStatus.BOOKED;
+      await this.slotRepo.save(updatedSlot);
+    }
 
     const appointment = this.appointmentRepo.create({
       doctor,
       patient,
-      slot,
+      slot: updatedSlot,
       date: dto.date,
       startTime: dto.startTime,
       endTime: dto.endTime,
@@ -191,7 +206,7 @@ export class AppointmentsService {
     });
   }
 
-  // ── Cancel (updated with 30-min cutoff) ──────────────────
+  // ── Cancel (30-min cutoff) ──────────────────────────────────
 
   async cancel(patient: PatientProfile, id: string): Promise<Appointment> {
     if (!this.isValidUUID(id)) {
@@ -390,16 +405,6 @@ export class AppointmentsService {
     newSlot: Slot,
     dto: RescheduleAppointmentDto,
   ): Promise<{ appointment: Appointment }> {
-    if (newSlot.bookedCount >= newSlot.maxCapacity) {
-      const suggestion = await this.findNextAvailable(
-        appointment.doctor.id, dto.date,
-      );
-      throw new ConflictException({
-        message: 'Requested wave is full',
-        suggestion,
-      });
-    }
-
     const duplicateWaveBooking = await this.appointmentRepo.findOne({
       where: {
         patient: { id: appointment.patient.id },
@@ -409,31 +414,59 @@ export class AppointmentsService {
     });
 
     if (duplicateWaveBooking) {
-      throw new ConflictException(
-        'You have already booked this wave window',
-      );
+      throw new ConflictException('You have already booked this wave window');
     }
 
-    // Release old slot
+    // Release old slot first
     if (oldSlot) {
       if (oldSlot.slotType === SlotType.WAVE) {
-        oldSlot.bookedCount = Math.max(0, oldSlot.bookedCount - 1);
-        oldSlot.status = SlotStatus.AVAILABLE;
+        await this.slotRepo
+          .createQueryBuilder()
+          .update(Slot)
+          .set({
+            bookedCount: () => 'GREATEST("bookedCount" - 1, 0)',
+            status: SlotStatus.AVAILABLE,
+          })
+          .where('id = :id', { id: oldSlot.id })
+          .execute();
       } else {
         oldSlot.status = SlotStatus.AVAILABLE;
+        await this.slotRepo.save(oldSlot);
       }
-      await this.slotRepo.save(oldSlot);
     }
 
-    // Reserve new wave slot - assign new token
-    const tokenNumber = newSlot.bookedCount + 1;
-    newSlot.bookedCount = tokenNumber;
-    if (newSlot.bookedCount >= newSlot.maxCapacity) {
-      newSlot.status = SlotStatus.BOOKED;
-    }
-    await this.slotRepo.save(newSlot);
+    // Atomic increment on new wave slot
+    const result = await this.slotRepo
+      .createQueryBuilder()
+      .update(Slot)
+      .set({ bookedCount: () => '"bookedCount" + 1' })
+      .where('id = :id', { id: newSlot.id })
+      .andWhere('"bookedCount" < "maxCapacity"')
+      .execute();
 
-    appointment.slot = newSlot;
+    if (result.affected === 0) {
+      const suggestion = await this.findNextAvailable(
+        appointment.doctor.id, dto.date,
+      );
+      throw new ConflictException({
+        message: 'Requested wave is full',
+        suggestion,
+      });
+    }
+
+    const updatedNewSlot = await this.slotRepo.findOneBy({ id: newSlot.id });
+    if (!updatedNewSlot) {
+      throw new NotFoundException('Slot not found after update');
+    }
+
+    const tokenNumber = updatedNewSlot.bookedCount;
+
+    if (updatedNewSlot.bookedCount >= updatedNewSlot.maxCapacity) {
+      updatedNewSlot.status = SlotStatus.BOOKED;
+      await this.slotRepo.save(updatedNewSlot);
+    }
+
+    appointment.slot = updatedNewSlot;
     appointment.date = dto.date;
     appointment.startTime = dto.startTime;
     appointment.endTime = dto.endTime;
@@ -463,7 +496,6 @@ export class AppointmentsService {
 
       if (slots.length === 0) continue;
 
-      // STREAM: first AVAILABLE + future slot
       const availableStream = slots.find(
         (s) =>
           s.slotType === SlotType.STREAM &&
@@ -480,7 +512,6 @@ export class AppointmentsService {
         };
       }
 
-      // WAVE: first window with available capacity
       const availableWave = slots.find(
         (s) =>
           s.slotType === SlotType.WAVE &&
