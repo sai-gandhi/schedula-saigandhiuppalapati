@@ -1,98 +1,172 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Schedula — Doctor Appointment Scheduling System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A backend system for managing doctor availability, appointment booking, 
+and scheduling, built with NestJS, TypeORM, and PostgreSQL. Supports two 
+appointment scheduling strategies — STREAM (exact-time bookings) and 
+WAVE (token-based group bookings) — along with rescheduling, cancellation, 
+and intelligent slot suggestions.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Framework:** NestJS (TypeScript)
+- **Database:** PostgreSQL (via TypeORM, migrations only — `synchronize: false`)
+- **Auth:** JWT (Passport.js), role-based guards (DOCTOR / PATIENT)
+- **Deployment:** Render (API) + Neon (managed PostgreSQL)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Live Server
 
-## Project setup
+**Base URL:** https://schedula-saigandhiuppalapati-1.onrender.com
 
-```bash
-$ npm install
-```
+Health check:
+GET /
+Returns: `Schedula API is running successfully! 🚀 | Developer: Uppalapati Sai Gandhi`
 
-## Compile and run the project
+## Project Setup
+
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL (local) or a Neon/managed Postgres instance
+- npm
+
+### Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/sai-gandhi/schedula-saigandhiuppalapati.git
+cd schedula-saigandhiuppalapati
+npm install
 ```
 
-## Run tests
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=postgresql://username:password@localhost:5432/schedula
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=1d
+PORT=3000
+```
+
+For local development, no `sslmode` is needed. For production (Neon), 
+append `?sslmode=require` to `DATABASE_URL` and ensure `ssl: { rejectUnauthorized: false }` 
+is set in the TypeORM config (already configured in `app.module.ts` 
+and `data-source.ts`).
+
+### Run Migrations
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Start the Server
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Server runs on `http://localhost:3000` by default.
 
-## Resources
+## Features Implemented
 
-Check out a few resources that may come in handy when working with NestJS:
+### Authentication & Authorization
+- Signup/login with email + password (bcrypt hashing)
+- JWT-based authentication
+- Role-based access control (DOCTOR, PATIENT)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Doctor & Patient Profiles
+- Profile creation, retrieval, and update for both roles
+- Public doctor discovery with search/filter/pagination
 
-## Support
+### Doctor Availability
+- Recurring weekly availability (multiple time windows per day)
+- Custom date overrides (including marking a date fully unavailable)
+- Overlap and invalid time-range validation
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Slot Generation
+- Configurable slot duration
+- Slot generation from recurring or override availability
+- Future-only, available-only slots returned to patients
 
-## Stay in touch
+### Advanced Scheduling (STREAM & WAVE)
+- Doctors choose a scheduling strategy: STREAM (exact appointment 
+  times with optional buffer) or WAVE (token-based, capacity-limited 
+  time windows)
+- Sequential token assignment for WAVE bookings
+- Real-time wave availability (`available / maxCapacity`)
+- Conflicting-schedule guards: prevents regenerating slots or 
+  switching scheduling type while active bookings exist for a date
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Appointment Booking & Management
+- Book, view (patient and doctor sides), and cancel appointments
+- Unified booking flow for both STREAM and WAVE (single service, 
+  branching by scheduling type — no duplicated booking logic)
+- Duplicate booking prevention
+- Atomic capacity increments for WAVE bookings to prevent race 
+  conditions under concurrent requests
 
-## License
+### Appointment Rescheduling
+- Reschedule to a new date/time following the same validation 
+  rules as initial booking (STREAM and WAVE)
+- Old slot/wave released and new slot/wave reserved consistently
+- 30-minute cutoff rule: appointments cannot be cancelled or 
+  rescheduled within 30 minutes of the start time
+- "Suggest next available slot" — if the requested slot/wave is 
+  unavailable, the system searches forward across days and 
+  returns the next open slot or wave window with capacity
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## API Collection
+
+The full Postman collection covering all implemented APIs (auth, 
+doctor/patient profiles, availability, slots, scheduling, 
+appointments, rescheduling) is available here:
+
+**[Schedula API Collection](https://github.com/sai-gandhi/schedula-saigandhiuppalapati/blob/main/src/postman/Schedula.postman_collection.json)**
+
+To import: open Postman → Import → paste the link or upload the 
+exported `.json` file from this repo at `/postman/Schedula.postman_collection.json`.
+
+## Project Structure
+src/
+
+├── auth/              # JWT auth, guards, roles
+
+├── users/             # Base user entity
+
+├── doctor/            # Doctor profile CRUD + discovery
+
+├── patient/           # Patient profile CRUD
+
+├── availability/       # Recurring + override availability
+
+├── slots/             # Slot generation and patient slot view
+
+├── scheduling/         # STREAM/WAVE scheduling type + generation
+
+├── appointments/       # Booking, cancellation, rescheduling
+
+├── database/
+
+│   └── migrations/     # All TypeORM migrations (synchronize: false)
+
+├── app.module.ts
+
+├── app.controller.ts
+
+└── data-source.ts      # TypeORM CLI data source for migrations
+
+
+## Branching Strategy
+
+- Each day's task is developed on its own `feature/*` branch
+- Branches with interdependent work (e.g. appointment booking 
+  depending on slot generation) are branched off the relevant 
+  in-progress feature branch rather than `main`, until that 
+  branch is merged
+- PRs are kept small (~15 files) with a clear description per PR
+- No self-merging — every PR requires mentor review and approval 
+  before merging to `main`
+
+## Author
+
+**Uppalapati Sai Gandhi**
+Repository: https://github.com/sai-gandhi/schedula-saigandhiuppalapati
