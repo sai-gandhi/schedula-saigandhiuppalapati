@@ -1,0 +1,1703 @@
+{
+  "info": {
+    "_postman_id": "4aa601cb-a1c7-4efe-95ca-46b10ffc9738",
+    "name": "fresh production test cases",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39309541"
+  },
+  "item": [
+    {
+      "name": "Signup Doctor (STREAM)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"dr.aravind.prod@gmail.com\",\r\n  \"password\": \"Doctor@1234\",\r\n  \"role\": \"DOCTOR\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/signup",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Signup Patient 1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"patient1.prod@gmail.com\",\r\n  \"password\": \"Patient@1234\",\r\n  \"role\": \"PATIENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/signup",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Signup Patient 2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"patient2.prod@gmail.com\",\r\n  \"password\": \"Patient@5678\",\r\n  \"role\": \"PATIENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/signup",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login stream doctor",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"email\": \"dr.aravind.prod@gmail.com\", \"password\": \"Doctor@1234\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/login",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "login wave doctor",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"email\": \"dr.meenakshi.prod@gmail.com\", \"password\": \"Doctor@5678\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/login",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "login patient-1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"email\": \"patient1.prod@gmail.com\", \"password\": \"Patient@1234\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/login",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login patient-2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"email\": \"patient2.prod@gmail.com\", \"password\": \"Patient@5678\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/login",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create stream Doctor Profiles",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Dr. Aravind Prod\",\r\n  \"specialization\": \"Dermatology\",\r\n  \"experience\": \"8 years\",\r\n  \"qualification\": \"MBBS, MD\",\r\n  \"consultationFee\": 700,\r\n  \"availabilityHours\": \"Mon-Fri 10:00 AM - 1:00 PM\",\r\n  \"profileDetails\": \"STREAM scheduling doctor\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get stream doctor profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Dr. Meenakshi Prod\",\r\n  \"specialization\": \"General Medicine\",\r\n  \"experience\": \"15 years\",\r\n  \"qualification\": \"MBBS, MD\",\r\n  \"consultationFee\": 300,\r\n  \"availabilityHours\": \"Mon-Sat 9:00 AM - 12:00 PM\",\r\n  \"profileDetails\": \"WAVE scheduling doctor\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get wave doctor profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Dr. Meenakshi Prod\",\r\n  \"specialization\": \"General Medicine\",\r\n  \"experience\": \"15 years\",\r\n  \"qualification\": \"MBBS, MD\",\r\n  \"consultationFee\": 300,\r\n  \"availabilityHours\": \"Mon-Sat 9:00 AM - 12:00 PM\",\r\n  \"profileDetails\": \"WAVE scheduling doctor\"\r\n}"
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Patient-1 Profiles",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Patient One\",\r\n  \"age\": 28,\r\n  \"gender\": \"Male\",\r\n  \"contactDetails\": \"+91 9000011111\",\r\n  \"healthInfo\": \"No known allergies\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/patient/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "patient",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get patient-1 profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/patient/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "patient",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create patient-2 profile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Patient Two\",\r\n  \"age\": 32,\r\n  \"gender\": \"Female\",\r\n  \"contactDetails\": \"+91 9000022222\",\r\n  \"healthInfo\": \"No known allergies\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/patient/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "patient",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get patient-2 profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Patient Two\",\r\n  \"age\": 32,\r\n  \"gender\": \"Female\",\r\n  \"contactDetails\": \"+91 9000022222\",\r\n  \"healthInfo\": \"No known allergies\"\r\n}"
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/patient/profile",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "patient",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List all doctors (public)",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\": \"Patient Two\",\r\n  \"age\": 32,\r\n  \"gender\": \"Female\",\r\n  \"contactDetails\": \"+91 9000022222\",\r\n  \"healthInfo\": \"No known allergies\"\r\n}"
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search by specialization",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor?specialization=Dermatology",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor"
+          ],
+          "query": [
+            {
+              "key": "specialization",
+              "value": "Dermatology"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get doctor by ID",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/9a6e4abe-f39c-4f8b-96d7-c65464bef7e5",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "9a6e4abe-f39c-4f8b-96d7-c65464bef7e5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Set Monday availability (STREAM doctor)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"dayOfWeek\": \"MONDAY\",\r\n  \"startTime\": \"10:00\",\r\n  \"endTime\": \"13:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/availability",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "availability"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Set Monday availability (WAVE doctor)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"dayOfWeek\": \"MONDAY\",\r\n  \"startTime\": \"09:00\",\r\n  \"endTime\": \"12:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/availability",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "availability"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get availability",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/availability",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "availability"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Overlap conflict \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"dayOfWeek\": \"MONDAY\",\r\n  \"startTime\": \"11:00\",\r\n  \"endTime\": \"14:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/availability",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "availability"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Custom override",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"date\": \"2026-06-29\",\r\n  \"startTime\": \"10:00\",\r\n  \"endTime\": \"12:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/availability/override",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "availability",
+            "override"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SCHEDULING TYPE TESTS Set STREAM type",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"schedulingType\": \"STREAM\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/scheduling-type",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "scheduling-type"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Set WAVE type",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"schedulingType\": \"WAVE\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/scheduling-type",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "scheduling-type"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid scheduling type \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"schedulingType\": \"INVALID\" }"
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/scheduling-type",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "scheduling-type"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "0STREAM SLOT GENERATION TESTS Generate STREAM slots (20 min, 10 min buffer)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"date\": \"2026-06-29\",\r\n  \"duration\": 20,\r\n  \"bufferTime\": 10\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/slots/stream",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "slots",
+            "stream"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient views STREAM slots",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/9a6e4abe-f39c-4f8b-96d7-c65464bef7e5/slots/scheduled?date=2026-06-29",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "9a6e4abe-f39c-4f8b-96d7-c65464bef7e5",
+            "slots",
+            "scheduled"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-06-29"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Generate STREAM on WAVE doctor \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"date\": \"2026-06-29\", \"duration\": 20 }\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/slots/stream",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "slots",
+            "stream"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Signup Doctor (WAVE)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"dr.meenakshi.prod@gmail.com\",\r\n  \"password\": \"Doctor@5678\",\r\n  \"role\": \"DOCTOR\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/auth/signup",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Past date \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"date\": \"2026-06-01\", \"duration\": 20 }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/slots/stream",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "slots",
+            "stream"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "WAVE SLOT GENERATION TESTS Generate WAVE slots (maxCapacity 3)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"date\": \"2026-06-29\",\r\n  \"maxCapacity\": 3\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/slots/wave",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "slots",
+            "wave"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient views WAVE slots",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"date\": \"2026-06-29\",\r\n  \"maxCapacity\": 3\r\n}"
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/bf6fa178-aa72-4c0a-833b-89c2701261f5/slots/scheduled?date=2026-06-29",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "bf6fa178-aa72-4c0a-833b-89c2701261f5",
+            "slots",
+            "scheduled"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-06-29"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Generate WAVE on STREAM doctor \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"date\": \"2026-06-29\", \"maxCapacity\": 5 }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/slots/wave",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "slots",
+            "wave"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "APPOINTMENT BOOKING TESTS Patient 1 books STREAM slot",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"doctorId\": \"9a6e4abe-f39c-4f8b-96d7-c65464bef7e5\",\r\n  \"date\": \"2026-06-29\",\r\n  \"startTime\": \"10:00\",\r\n  \"endTime\": \"10:20\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify slot now unavailable",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/9a6e4abe-f39c-4f8b-96d7-c65464bef7e5/slots/scheduled?date=2026-06-29",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "9a6e4abe-f39c-4f8b-96d7-c65464bef7e5",
+            "slots",
+            "scheduled"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-06-29"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient 2 tries same slot \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"doctorId\": \"9a6e4abe-f39c-4f8b-96d7-c65464bef7e5\",\r\n  \"date\": \"2026-06-29\",\r\n  \"startTime\": \"10:00\",\r\n  \"endTime\": \"10:20\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify slot now unavailable",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/9a6e4abe-f39c-4f8b-96d7-c65464bef7e5/slots/scheduled?date=2026-06-29",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "9a6e4abe-f39c-4f8b-96d7-c65464bef7e5",
+            "slots",
+            "scheduled"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-06-29"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient 1 books WAVE slot \u2014 Token 1",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"doctorId\": \"bf6fa178-aa72-4c0a-833b-89c2701261f5\",\r\n  \"date\": \"2026-06-29\",\r\n  \"startTime\": \"09:00\",\r\n  \"endTime\": \"12:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient 2 books WAVE slot \u2014 Token 2",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"doctorId\": \"bf6fa178-aa72-4c0a-833b-89c2701261f5\",\r\n  \"date\": \"2026-06-29\",\r\n  \"startTime\": \"09:00\",\r\n  \"endTime\": \"12:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify wave availability updated",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/bf6fa178-aa72-4c0a-833b-89c2701261f5/slots/scheduled?date=2026-06-29",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "bf6fa178-aa72-4c0a-833b-89c2701261f5",
+            "slots",
+            "scheduled"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-06-29"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient 1 duplicate wave booking \u274c",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"doctorId\": \"bf6fa178-aa72-4c0a-833b-89c2701261f5\",\r\n  \"date\": \"2026-06-29\",\r\n  \"startTime\": \"09:00\",\r\n  \"endTime\": \"12:00\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patient views their appointments",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment/my",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment",
+            "my"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "APPOINTMENT RESCHEDULING TESTS Generate slot for new date first",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"date\": \"2026-07-06\",\r\n  \"duration\": 20,\r\n  \"bufferTime\": 10\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/doctor/slots/stream",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "doctor",
+            "slots",
+            "stream"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Reschedule STREAM appointment \u2705",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"date\": \"2026-07-06\",\r\n  \"startTime\": \"10:00\",\r\n  \"endTime\": \"10:20\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://schedula-saigandhiuppalapati-1.onrender.com/appointment/4fd17651-1b79-4738-ab4a-30b77f90b2ec/reschedule",
+          "protocol": "https",
+          "host": [
+            "schedula-saigandhiuppalapati-1",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "appointment",
+            "4fd17651-1b79-4738-ab4a-30b77f90b2ec",
+            "reschedule"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
+
+
