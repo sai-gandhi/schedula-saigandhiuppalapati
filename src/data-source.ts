@@ -15,5 +15,5 @@ export const AppDataSource = new DataSource({
   entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability, Slot],
   migrations: ['src/database/migrations/*.ts'],
   synchronize: false,
-  ssl: false,
+  ssl: { rejectUnauthorized: false },
 });
