@@ -1,9 +1,6 @@
-import { IsUUID, IsDateString, Matches } from 'class-validator';
+import { IsDateString, Matches } from 'class-validator';
 
-export class CreateAppointmentDto {
-  @IsUUID()
-  doctorId: string;
-
+export class RescheduleAppointmentDto {
   @IsDateString()
   date: string;
 

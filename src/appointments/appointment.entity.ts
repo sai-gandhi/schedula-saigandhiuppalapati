@@ -4,6 +4,7 @@ import {
 } from 'typeorm';
 import { DoctorProfile } from '../doctor/doctor.entity';
 import { PatientProfile } from '../patient/patient.entity';
+import { Slot } from '../slots/slot.entity';
 
 export enum AppointmentStatus {
   BOOKED = 'BOOKED',
@@ -37,4 +38,15 @@ export class Appointment {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @ManyToOne(() => Slot, { nullable: true, onDelete: 'SET NULL' })
+@JoinColumn()
+slot: Slot;
+
+@Column({ nullable: true })
+schedulingType: string;
+
+@Column({ type: 'int', nullable: true })
+tokenNumber: number | null;
+
 }

@@ -98,6 +98,10 @@ export class DoctorService {
     };
   }
 
+  async save(doctor: DoctorProfile): Promise<DoctorProfile> {
+    return this.doctorRepo.save(doctor);
+  }
+
   async findById(id: string): Promise<DoctorProfile> {
     if (!id.match(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
