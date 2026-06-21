@@ -144,9 +144,6 @@ export class AppointmentsService {
       throw new ConflictException('You have already booked this wave window');
     }
 
-    // Atomic increment: only succeeds if bookedCount < maxCapacity at the
-    // moment of the UPDATE. Prevents race conditions where two concurrent
-    // requests both pass an earlier read-based check and overbook the wave.
     const result = await this.slotRepo
       .createQueryBuilder()
       .update(Slot)
@@ -194,14 +191,6 @@ export class AppointmentsService {
     return this.appointmentRepo.find({
       where: { patient: { id: patient.id } },
       relations: { doctor: true },
-      order: { date: 'DESC', startTime: 'DESC' },
-    });
-  }
-
-  async getDoctorAppointments(doctor: DoctorProfile): Promise<Appointment[]> {
-    return this.appointmentRepo.find({
-      where: { doctor: { id: doctor.id } },
-      relations: { patient: true },
       order: { date: 'DESC', startTime: 'DESC' },
     });
   }
@@ -373,7 +362,6 @@ export class AppointmentsService {
       });
     }
 
-    // Release old slot
     if (oldSlot) {
       if (oldSlot.slotType === SlotType.WAVE) {
         oldSlot.bookedCount = Math.max(0, oldSlot.bookedCount - 1);
@@ -384,7 +372,6 @@ export class AppointmentsService {
       await this.slotRepo.save(oldSlot);
     }
 
-    // Reserve new slot
     newSlot.status = SlotStatus.BOOKED;
     await this.slotRepo.save(newSlot);
 
@@ -417,7 +404,6 @@ export class AppointmentsService {
       throw new ConflictException('You have already booked this wave window');
     }
 
-    // Release old slot first
     if (oldSlot) {
       if (oldSlot.slotType === SlotType.WAVE) {
         await this.slotRepo
@@ -435,7 +421,6 @@ export class AppointmentsService {
       }
     }
 
-    // Atomic increment on new wave slot
     const result = await this.slotRepo
       .createQueryBuilder()
       .update(Slot)
@@ -475,6 +460,73 @@ export class AppointmentsService {
 
     const updated = await this.appointmentRepo.save(appointment);
     return { appointment: updated };
+  }
+
+  // ── Doctor-side appointment management (Day 12) ─────────
+
+  async getDoctorAppointments(
+    doctor: DoctorProfile,
+    date?: string,
+  ): Promise<Appointment[]> {
+    if (date && !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      throw new BadRequestException('Invalid date format. Use YYYY-MM-DD');
+    }
+
+    const where: any = {
+      doctor: { id: doctor.id },
+      status: AppointmentStatus.BOOKED,
+    };
+
+    if (date) {
+      where.date = date;
+    }
+
+    return this.appointmentRepo.find({
+      where,
+      relations: { patient: true },
+      order: { date: 'ASC', startTime: 'ASC' },
+    });
+  }
+
+  async cancelByDoctor(doctor: DoctorProfile, id: string): Promise<Appointment> {
+    if (!this.isValidUUID(id)) {
+      throw new NotFoundException('Appointment not found');
+    }
+
+    const appointment = await this.appointmentRepo.findOne({
+      where: { id },
+      relations: { patient: true, doctor: true, slot: true },
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+
+    if (appointment.doctor.id !== doctor.id) {
+      throw new ForbiddenException('You can only cancel your own appointments');
+    }
+
+    if (appointment.status === AppointmentStatus.CANCELLED) {
+      throw new BadRequestException('Appointment is already cancelled');
+    }
+
+    appointment.status = AppointmentStatus.CANCELLED;
+    const updated = await this.appointmentRepo.save(appointment);
+
+    if (appointment.slot) {
+      const slot = appointment.slot;
+
+      if (slot.slotType === SlotType.WAVE) {
+        slot.bookedCount = Math.max(0, slot.bookedCount - 1);
+        slot.status = SlotStatus.AVAILABLE;
+      } else {
+        slot.status = SlotStatus.AVAILABLE;
+      }
+
+      await this.slotRepo.save(slot);
+    }
+
+    return updated;
   }
 
   // ── Suggest next available slot/wave ────────────────────

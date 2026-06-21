@@ -1,6 +1,6 @@
 import {
   Controller, Post, Get, Patch,
-  Body, Param, UseGuards, Request,
+  Body, Param, Query, UseGuards, Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -55,11 +55,22 @@ export class AppointmentsController {
     return this.appointmentsService.reschedule(patient, id, dto);
   }
 
-  @Get('doctor-appointments')
+  // Doctor-side appointment management (Day 12)
+  // Using 'appointments-list' to avoid colliding with
+  // DoctorController's GET /doctor/:id route.
+  @Get('doctor/appointments-list')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('DOCTOR')
-  async getDoctorAppointments(@Request() req) {
+  async getDoctorAppointments(@Request() req, @Query('date') date?: string) {
     const doctor = await this.doctorService.findByUser(req.user);
-    return this.appointmentsService.getDoctorAppointments(doctor);
+    return this.appointmentsService.getDoctorAppointments(doctor, date);
+  }
+
+  @Patch('doctor/appointments-list/:id/cancel')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('DOCTOR')
+  async cancelByDoctor(@Request() req, @Param('id') id: string) {
+    const doctor = await this.doctorService.findByUser(req.user);
+    return this.appointmentsService.cancelByDoctor(doctor, id);
   }
 }
