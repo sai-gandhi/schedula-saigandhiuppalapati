@@ -12,7 +12,7 @@ import { Slot, SlotStatus, SlotType } from '../slots/slot.entity';
 import { DoctorProfile } from '../doctor/doctor.entity';
 import { PatientProfile } from '../patient/patient.entity';
 import { DoctorService } from '../doctor/doctor.service';
-
+import { NextAvailableDto } from './dto/next-available.dto';
 const CUTOFF_MINUTES = 30;
 
 @Injectable()
@@ -583,4 +583,96 @@ export class AppointmentsService {
 
     return null;
   }
+
+  async getNextAvailable(dto: NextAvailableDto): Promise<{
+  doctorId: string;
+  found: boolean;
+  message: string;
+  date?: string;
+  schedulingType?: string;
+  slots?: any[];
+  waves?: any[];
+}> {
+  const doctor = await this.doctorService.findById(dto.doctorId);
+  const searchDays = dto.searchDays || 30;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < searchDays; i++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() + i);
+    const dateStr = checkDate.toISOString().split('T')[0];
+
+    // Find available slots for this date
+    const slots = await this.slotRepo
+      .createQueryBuilder('slot')
+      .where('slot.doctorId = :doctorId', { doctorId: doctor.id })
+      .andWhere('slot.date = :date', { date: dateStr })
+      .orderBy('slot.startTime', 'ASC')
+      .getMany();
+
+    if (slots.length === 0) continue;
+
+    // STREAM: find first available future slot
+    if (doctor.schedulingType === 'STREAM') {
+      const availableSlots = slots.filter(
+        (s) =>
+          s.status === SlotStatus.AVAILABLE &&
+          this.isFutureDateTime(dateStr, this.trimTime(s.startTime)),
+      );
+
+      if (availableSlots.length > 0) {
+        return {
+          doctorId: doctor.id,
+          found: true,
+          message: i === 0
+            ? 'Slots available today'
+            : `Next available date found: ${dateStr}`,
+          date: dateStr,
+          schedulingType: 'STREAM',
+          slots: availableSlots.map((s) => ({
+            id: s.id,
+            startTime: this.trimTime(s.startTime),
+            endTime: this.trimTime(s.endTime),
+          })),
+        };
+      }
+    }
+
+    // WAVE: find first wave with available capacity
+    if (doctor.schedulingType === 'WAVE') {
+      const availableWaves = slots.filter(
+        (s) =>
+          s.slotType === SlotType.WAVE &&
+          s.bookedCount < s.maxCapacity &&
+          this.isFutureDateTime(dateStr, this.trimTime(s.startTime)),
+      );
+
+      if (availableWaves.length > 0) {
+        return {
+          doctorId: doctor.id,
+          found: true,
+          message: i === 0
+            ? 'Wave slots available today'
+            : `Next available date found: ${dateStr}`,
+          date: dateStr,
+          schedulingType: 'WAVE',
+          waves: availableWaves.map((s) => ({
+            id: s.id,
+            timeWindow: `${this.trimTime(s.startTime)} - ${this.trimTime(s.endTime)}`,
+            available: s.maxCapacity - s.bookedCount,
+            maxCapacity: s.maxCapacity,
+          })),
+        };
+      }
+    }
+  }
+
+  return {
+    doctorId: doctor.id,
+    found: false,
+    message: `No appointments available in the next ${searchDays} working days. Please try again later.`,
+  };
+}
 }
