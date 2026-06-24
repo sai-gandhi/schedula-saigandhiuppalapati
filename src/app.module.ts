@@ -17,6 +17,8 @@ import { Slot } from './slots/slot.entity';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { Appointment } from './appointments/appointment.entity';
 import { SchedulingModule } from './scheduling/scheduling.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { Notification } from './notifications/notification.entity';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { SchedulingModule } from './scheduling/scheduling.module';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         url: config.get('DATABASE_URL'),
-        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability, Slot, Appointment],
+        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability, Slot, Appointment, Notification],
         synchronize: false,
         ssl: false,
       }),
@@ -40,6 +42,7 @@ import { SchedulingModule } from './scheduling/scheduling.module';
     AvailabilityModule,
     SlotsModule,
     SchedulingModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
 })
