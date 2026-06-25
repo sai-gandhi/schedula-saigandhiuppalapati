@@ -1,11 +1,12 @@
 import {
-  Controller, Get, Patch,
+  Controller, Get, Patch, Post,
   Param, UseGuards, Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { NotificationsService } from './notifications.service';
+import { ReminderService } from './reminder.service';
 import { PatientService } from '../patient/patient.service';
 
 @Controller('notifications')
@@ -15,6 +16,7 @@ export class NotificationsController {
   constructor(
     private notificationsService: NotificationsService,
     private patientService: PatientService,
+    private reminderService: ReminderService,
   ) {}
 
   @Get()
@@ -39,5 +41,11 @@ export class NotificationsController {
   async markAsRead(@Request() req, @Param('id') id: string) {
     const patient = await this.patientService.findByUser(req.user);
     return this.notificationsService.markAsRead(patient, id);
+  }
+
+  @Post('trigger-reminders')
+  async triggerReminders() {
+    await this.reminderService.sendHourlyReminders();
+    return { message: 'Reminder job triggered manually' };
   }
 }
