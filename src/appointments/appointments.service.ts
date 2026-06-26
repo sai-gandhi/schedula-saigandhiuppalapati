@@ -558,7 +558,7 @@ export class AppointmentsService {
     appointment.status = AppointmentStatus.CANCELLED;
     const updated = await this.appointmentRepo.save(appointment);
 
-    // Notify patient when doctor cancels their appointment
+    //Notify patient when doctor cancels their appointment
     await this.notificationsService.createNotification(
       appointment.patient,
       'Appointment Cancelled by Doctor',
