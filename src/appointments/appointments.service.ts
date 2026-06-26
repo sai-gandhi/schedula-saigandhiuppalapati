@@ -9,9 +9,12 @@ import { Appointment, AppointmentStatus } from './appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
 import { Slot, SlotStatus, SlotType } from '../slots/slot.entity';
-import { DoctorProfile } from '../doctor/doctor.entity';
+import { DoctorProfile, SchedulingType } from '../doctor/doctor.entity';
 import { PatientProfile } from '../patient/patient.entity';
 import { DoctorService } from '../doctor/doctor.service';
+import { NextAvailableDto } from './dto/next-available.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/notification.entity';
 
 const CUTOFF_MINUTES = 30;
 
@@ -23,6 +26,7 @@ export class AppointmentsService {
     @InjectRepository(Slot)
     private slotRepo: Repository<Slot>,
     private doctorService: DoctorService,
+    private notificationsService: NotificationsService,
   ) {}
 
   private trimTime(time: string): string {
@@ -52,7 +56,7 @@ export class AppointmentsService {
     return d.toISOString().split('T')[0];
   }
 
-  // ── Booking (Day 8/9) ──────────────────────────────────────
+  // ── Booking ────────────────────────────────────────────────
 
   async create(
     patient: PatientProfile,
@@ -123,7 +127,16 @@ export class AppointmentsService {
       schedulingType: 'STREAM',
     });
 
-    return this.appointmentRepo.save(appointment);
+    const saved = await this.appointmentRepo.save(appointment);
+
+    await this.notificationsService.createNotification(
+      patient,
+      'Appointment Booked',
+      `Your appointment with ${doctor.fullName} on ${dto.date} at ${dto.startTime} has been confirmed.`,
+      NotificationType.APPOINTMENT_BOOKED,
+    );
+
+    return saved;
   }
 
   private async bookWaveAppointment(
@@ -182,7 +195,16 @@ export class AppointmentsService {
       tokenNumber,
     });
 
-    return this.appointmentRepo.save(appointment);
+    const saved = await this.appointmentRepo.save(appointment);
+
+    await this.notificationsService.createNotification(
+      patient,
+      'Appointment Booked',
+      `Your wave appointment with ${doctor.fullName} on ${dto.date} (Token ${tokenNumber}) has been confirmed.`,
+      NotificationType.APPOINTMENT_BOOKED,
+    );
+
+    return saved;
   }
 
   // ── Shared views ──────────────────────────────────────────
@@ -195,7 +217,7 @@ export class AppointmentsService {
     });
   }
 
-  // ── Cancel (30-min cutoff) ──────────────────────────────────
+  // ── Cancel (30-min cutoff) ────────────────────────────────
 
   async cancel(patient: PatientProfile, id: string): Promise<Appointment> {
     if (!this.isValidUUID(id)) {
@@ -234,16 +256,21 @@ export class AppointmentsService {
     appointment.status = AppointmentStatus.CANCELLED;
     const updated = await this.appointmentRepo.save(appointment);
 
+    await this.notificationsService.createNotification(
+      patient,
+      'Appointment Cancelled',
+      `Your appointment with ${appointment.doctor.fullName} on ${appointment.date} at ${trimmedStart} has been cancelled.`,
+      NotificationType.APPOINTMENT_CANCELLED,
+    );
+
     if (appointment.slot) {
       const slot = appointment.slot;
-
       if (slot.slotType === SlotType.WAVE) {
         slot.bookedCount = Math.max(0, slot.bookedCount - 1);
         slot.status = SlotStatus.AVAILABLE;
       } else {
         slot.status = SlotStatus.AVAILABLE;
       }
-
       await this.slotRepo.save(slot);
     }
 
@@ -321,10 +348,10 @@ export class AppointmentsService {
     }
 
     if (newSlot.slotType === SlotType.WAVE) {
-      return this.rescheduleToWave(appointment, oldSlot, newSlot, dto);
+      return this.rescheduleToWave(appointment, oldSlot, newSlot, dto, patient);
     }
 
-    return this.rescheduleToStream(appointment, oldSlot, newSlot, dto);
+    return this.rescheduleToStream(appointment, oldSlot, newSlot, dto, patient);
   }
 
   private async rescheduleToStream(
@@ -332,6 +359,7 @@ export class AppointmentsService {
     oldSlot: Slot,
     newSlot: Slot,
     dto: RescheduleAppointmentDto,
+    patient: PatientProfile,
   ): Promise<{ appointment: Appointment }> {
     if (newSlot.status !== SlotStatus.AVAILABLE) {
       const suggestion = await this.findNextAvailable(
@@ -383,6 +411,14 @@ export class AppointmentsService {
     appointment.tokenNumber = null;
 
     const updated = await this.appointmentRepo.save(appointment);
+
+    await this.notificationsService.createNotification(
+      patient,
+      'Appointment Rescheduled',
+      `Your appointment with ${appointment.doctor.fullName} has been rescheduled to ${dto.date} at ${dto.startTime}.`,
+      NotificationType.APPOINTMENT_RESCHEDULED,
+    );
+
     return { appointment: updated };
   }
 
@@ -391,6 +427,7 @@ export class AppointmentsService {
     oldSlot: Slot,
     newSlot: Slot,
     dto: RescheduleAppointmentDto,
+    patient: PatientProfile,
   ): Promise<{ appointment: Appointment }> {
     const duplicateWaveBooking = await this.appointmentRepo.findOne({
       where: {
@@ -459,10 +496,18 @@ export class AppointmentsService {
     appointment.tokenNumber = tokenNumber;
 
     const updated = await this.appointmentRepo.save(appointment);
+
+    await this.notificationsService.createNotification(
+      patient,
+      'Appointment Rescheduled',
+      `Your wave appointment with ${appointment.doctor.fullName} has been rescheduled to ${dto.date} (Token ${tokenNumber}).`,
+      NotificationType.APPOINTMENT_RESCHEDULED,
+    );
+
     return { appointment: updated };
   }
 
-  // ── Doctor-side appointment management (Day 12) ─────────
+  // ── Doctor-side appointment management (Day 12) ──────────
 
   async getDoctorAppointments(
     doctor: DoctorProfile,
@@ -513,23 +558,29 @@ export class AppointmentsService {
     appointment.status = AppointmentStatus.CANCELLED;
     const updated = await this.appointmentRepo.save(appointment);
 
+    // Notify patient when doctor cancels their appointment
+    await this.notificationsService.createNotification(
+      appointment.patient,
+      'Appointment Cancelled by Doctor',
+      `Your appointment with ${doctor.fullName} on ${appointment.date} at ${this.trimTime(appointment.startTime)} has been cancelled by the doctor.`,
+      NotificationType.APPOINTMENT_CANCELLED,
+    );
+
     if (appointment.slot) {
       const slot = appointment.slot;
-
       if (slot.slotType === SlotType.WAVE) {
         slot.bookedCount = Math.max(0, slot.bookedCount - 1);
         slot.status = SlotStatus.AVAILABLE;
       } else {
         slot.status = SlotStatus.AVAILABLE;
       }
-
       await this.slotRepo.save(slot);
     }
 
     return updated;
   }
 
-  // ── Suggest next available slot/wave ────────────────────
+  // ── Suggest next available slot/wave (used in reschedule) ─
 
   private async findNextAvailable(
     doctorId: string,
@@ -582,5 +633,99 @@ export class AppointmentsService {
     }
 
     return null;
+  }
+
+  // ── Next Available Booking (Day 13) ───────────────────────
+
+  async getNextAvailable(dto: NextAvailableDto): Promise<{
+    doctorId: string;
+    found: boolean;
+    message: string;
+    date?: string;
+    schedulingType?: string;
+    slots?: any[];
+    waves?: any[];
+  }> {
+    const doctor = await this.doctorService.findById(dto.doctorId);
+    const searchDays = dto.searchDays || 30;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < searchDays; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() + i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+
+      const slots = await this.slotRepo
+        .createQueryBuilder('slot')
+        .where('slot.doctorId = :doctorId', { doctorId: doctor.id })
+        .andWhere('slot.date = :date', { date: dateStr })
+        .orderBy('slot.startTime', 'ASC')
+        .getMany();
+
+      if (slots.length === 0) continue;
+
+      // STREAM
+      if (doctor.schedulingType === SchedulingType.STREAM) {
+        const availableSlots = slots.filter(
+          (s) =>
+            s.slotType === SlotType.STREAM &&
+            s.status === SlotStatus.AVAILABLE &&
+            (i > 0 || this.isFutureDateTime(dateStr, this.trimTime(s.startTime))),
+        );
+
+        if (availableSlots.length > 0) {
+          return {
+            doctorId: doctor.id,
+            found: true,
+            message: i === 0
+              ? 'Slots available today'
+              : `Next available date found: ${dateStr}`,
+            date: dateStr,
+            schedulingType: 'STREAM',
+            slots: availableSlots.map((s) => ({
+              id: s.id,
+              startTime: this.trimTime(s.startTime),
+              endTime: this.trimTime(s.endTime),
+            })),
+          };
+        }
+      }
+
+      // WAVE
+      if (doctor.schedulingType === SchedulingType.WAVE) {
+        const availableWaves = slots.filter(
+          (s) =>
+            s.slotType === SlotType.WAVE &&
+            s.bookedCount < s.maxCapacity &&
+            (i > 0 || this.isFutureDateTime(dateStr, this.trimTime(s.startTime))),
+        );
+
+        if (availableWaves.length > 0) {
+          return {
+            doctorId: doctor.id,
+            found: true,
+            message: i === 0
+              ? 'Wave slots available today'
+              : `Next available date found: ${dateStr}`,
+            date: dateStr,
+            schedulingType: 'WAVE',
+            waves: availableWaves.map((s) => ({
+              id: s.id,
+              timeWindow: `${this.trimTime(s.startTime)} - ${this.trimTime(s.endTime)}`,
+              available: s.maxCapacity - s.bookedCount,
+              maxCapacity: s.maxCapacity,
+            })),
+          };
+        }
+      }
+    }
+
+    return {
+      doctorId: doctor.id,
+      found: false,
+      message: `No appointments available in the next ${searchDays} working days. Please try again later.`,
+    };
   }
 }

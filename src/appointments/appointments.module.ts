@@ -6,12 +6,14 @@ import { AppointmentsService } from './appointments.service';
 import { AppointmentsController } from './appointments.controller';
 import { DoctorModule } from '../doctor/doctor.module';
 import { PatientModule } from '../patient/patient.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment, Slot]),
     DoctorModule,
     PatientModule,
+    NotificationsModule,
   ],
   providers: [AppointmentsService],
   controllers: [AppointmentsController],

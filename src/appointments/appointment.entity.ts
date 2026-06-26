@@ -49,4 +49,7 @@ schedulingType: string;
 @Column({ type: 'int', nullable: true })
 tokenNumber: number | null;
 
+@Column({ default: false })
+reminderSent: boolean;
+
 }

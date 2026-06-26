@@ -8,6 +8,7 @@ import { Roles } from '../auth/roles.decorator';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
+import { NextAvailableDto } from './dto/next-available.dto';
 import { PatientService } from '../patient/patient.service';
 import { DoctorService } from '../doctor/doctor.service';
 
@@ -18,6 +19,12 @@ export class AppointmentsController {
     private patientService: PatientService,
     private doctorService: DoctorService,
   ) {}
+
+  // Public — patient searches for next available slot
+  @Get('appointments/next-available')
+  getNextAvailable(@Query() dto: NextAvailableDto) {
+    return this.appointmentsService.getNextAvailable(dto);
+  }
 
   @Post('appointment')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -55,9 +62,6 @@ export class AppointmentsController {
     return this.appointmentsService.reschedule(patient, id, dto);
   }
 
-  // Doctor-side appointment management (Day 12)
-  // Using 'appointments-list' to avoid colliding with
-  // DoctorController's GET /doctor/:id route.
   @Get('doctor/appointments-list')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('DOCTOR')
