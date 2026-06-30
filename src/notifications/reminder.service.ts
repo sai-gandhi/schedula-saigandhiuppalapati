@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Appointment, AppointmentStatus } from '../appointments/appointment.entity';
 import { NotificationsService } from './notifications.service';
 import { NotificationType } from './notification.entity';
@@ -16,7 +16,6 @@ export class ReminderService {
     private notificationsService: NotificationsService,
   ) {}
 
-  // ── Runs every hour ──────────────────────────────────────
   @Cron(CronExpression.EVERY_HOUR)
   async sendHourlyReminders() {
     this.logger.log('Running hourly appointment reminder job...');
@@ -45,23 +44,42 @@ export class ReminderService {
     this.logger.log(`Found ${upcoming.length} appointments starting within 1 hour`);
 
     for (const appt of upcoming) {
+      let title: string;
+      let message: string;
+
+      if (appt.schedulingType === 'WAVE' && appt.tokenNumber) {
+        title = 'Appointment Reminder';
+        message =
+          `Reminder: You have an appointment with ${appt.doctor.fullName} today.\n` +
+          `Reporting Time: ${appt.startTime.substring(0, 5)}\n` +
+          `Token Number: ${appt.tokenNumber}`;
+      } else {
+        title = 'Appointment Reminder';
+        message =
+          `Reminder: You have an appointment with ${appt.doctor.fullName} today.\n` +
+          `Date: ${appt.date}\n` +
+          `Time: ${appt.startTime.substring(0, 5)}`;
+      }
+
       await this.notificationsService.createNotification(
         appt.patient,
-        'Appointment Reminder',
-        `Reminder: You have an appointment with ${appt.doctor.fullName} today at ${appt.startTime.substring(0, 5)}. Please be on time.`,
+        title,
+        message,
         NotificationType.APPOINTMENT_REMINDER,
       );
 
       appt.reminderSent = true;
       await this.appointmentRepo.save(appt);
 
-      this.logger.log(`Reminder sent to ${appt.patient.fullName} for appointment at ${appt.startTime}`);
+      this.logger.log(
+        `Reminder sent to ${appt.patient.fullName} ` +
+        `(${appt.schedulingType}) for ${appt.date} at ${appt.startTime.substring(0, 5)}`,
+      );
     }
 
     this.logger.log('Hourly reminder job completed');
   }
 
-  // ── Runs once a day at 8:00 AM ───────────────────────────
   @Cron('0 8 * * *')
   async sendDailyReminders() {
     this.logger.log('Running daily appointment reminder job...');
@@ -81,14 +99,32 @@ export class ReminderService {
     this.logger.log(`Found ${appointments.length} appointments tomorrow`);
 
     for (const appt of appointments) {
+      let title: string;
+      let message: string;
+
+      if (appt.schedulingType === 'WAVE' && appt.tokenNumber) {
+        title = 'Appointment Tomorrow';
+        message =
+          `Reminder: You have an appointment with ${appt.doctor.fullName} tomorrow (${tomorrowStr}).\n` +
+          `Reporting Time: ${appt.startTime.substring(0, 5)}\n` +
+          `Token Number: ${appt.tokenNumber}`;
+      } else {
+        title = 'Appointment Tomorrow';
+        message =
+          `Reminder: You have an appointment with ${appt.doctor.fullName} tomorrow (${tomorrowStr}).\n` +
+          `Time: ${appt.startTime.substring(0, 5)}`;
+      }
+
       await this.notificationsService.createNotification(
         appt.patient,
-        'Appointment Tomorrow',
-        `Reminder: You have an appointment with ${appt.doctor.fullName} tomorrow (${tomorrowStr}) at ${appt.startTime.substring(0, 5)}.`,
+        title,
+        message,
         NotificationType.APPOINTMENT_REMINDER,
       );
 
-      this.logger.log(`24hr reminder sent to ${appt.patient.fullName} for ${tomorrowStr}`);
+      this.logger.log(
+        `24hr reminder sent to ${appt.patient.fullName} for ${tomorrowStr}`,
+      );
     }
 
     this.logger.log('Daily reminder job completed');

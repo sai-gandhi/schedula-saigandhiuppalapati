@@ -39,6 +39,12 @@ export class AppointmentsService {
     return target > now;
   }
 
+  private isToday(date: string): boolean {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    return date === todayStr;
+  }
+
   private minutesUntil(date: string, time: string): number {
     const now = new Date();
     const target = new Date(`${date}T${time}:00`);
@@ -63,6 +69,13 @@ export class AppointmentsService {
     dto: CreateAppointmentDto,
   ): Promise<Appointment> {
     const doctor = await this.doctorService.findById(dto.doctorId);
+
+    // Day 18: Booking Window - only today's date allowed
+    if (!this.isToday(dto.date)) {
+      throw new BadRequestException(
+        'Appointments can only be booked for today. Past and future dates are not allowed.',
+      );
+    }
 
     if (!this.isFutureDateTime(dto.date, dto.startTime)) {
       throw new BadRequestException(
@@ -507,7 +520,7 @@ export class AppointmentsService {
     return { appointment: updated };
   }
 
-  // ── Doctor-side appointment management (Day 12) ──────────
+  // ── Doctor-side appointment management ──────────────────
 
   async getDoctorAppointments(
     doctor: DoctorProfile,
@@ -558,7 +571,6 @@ export class AppointmentsService {
     appointment.status = AppointmentStatus.CANCELLED;
     const updated = await this.appointmentRepo.save(appointment);
 
-    // Notify patient when doctor cancels their appointment
     await this.notificationsService.createNotification(
       appointment.patient,
       'Appointment Cancelled by Doctor',
@@ -666,7 +678,6 @@ export class AppointmentsService {
 
       if (slots.length === 0) continue;
 
-      // STREAM
       if (doctor.schedulingType === SchedulingType.STREAM) {
         const availableSlots = slots.filter(
           (s) =>
@@ -693,7 +704,6 @@ export class AppointmentsService {
         }
       }
 
-      // WAVE
       if (doctor.schedulingType === SchedulingType.WAVE) {
         const availableWaves = slots.filter(
           (s) =>
