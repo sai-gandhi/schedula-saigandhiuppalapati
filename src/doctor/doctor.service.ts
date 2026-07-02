@@ -9,6 +9,7 @@ import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { QueryDoctorDto } from './dto/query-doctor.dto';
 import { User } from '../users/user.entity';
+import { UpdateBookingConfigDto } from './dto/update-booking-config.dto';
 
 @Injectable()
 export class DoctorService {
@@ -113,4 +114,14 @@ export class DoctorService {
     if (!doctor) throw new NotFoundException('Doctor not found');
     return doctor;
   }
+
+  async updateBookingConfig(
+  user: any,
+  dto: UpdateBookingConfigDto,
+): Promise<DoctorProfile> {
+  const doctor = await this.findByUser(user);
+  doctor.allowFutureBooking = dto.allowFutureBooking;
+  doctor.maxFutureBookingDays = dto.maxFutureBookingDays ?? null;
+  return this.doctorRepo.save(doctor);
+}
 }

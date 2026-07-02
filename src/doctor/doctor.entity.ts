@@ -51,4 +51,10 @@ export class DoctorProfile {
   default: SchedulingType.STREAM,
 })
 schedulingType!: SchedulingType;
+
+@Column({ default: false })
+allowFutureBooking!: boolean;
+
+@Column({ type: 'int', nullable: true })
+maxFutureBookingDays!: number | null;
 }

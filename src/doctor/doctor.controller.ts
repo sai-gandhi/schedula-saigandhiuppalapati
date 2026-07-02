@@ -10,7 +10,7 @@ import { DoctorService } from './doctor.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { QueryDoctorDto } from './dto/query-doctor.dto';
-
+import { UpdateBookingConfigDto } from './dto/update-booking-config.dto';
 @Controller('doctor')
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}
@@ -50,4 +50,12 @@ export class DoctorController {
   update(@Request() req, @Body() dto: UpdateDoctorDto) {
     return this.doctorService.update(req.user, dto);
   }
+
+
+@Patch('booking-config')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('DOCTOR')
+updateBookingConfig(@Request() req, @Body() dto: UpdateBookingConfigDto) {
+  return this.doctorService.updateBookingConfig(req.user, dto);
+}
 }

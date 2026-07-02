@@ -15,6 +15,7 @@ import { DoctorService } from '../doctor/doctor.service';
 import { NextAvailableDto } from './dto/next-available.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/notification.entity';
+import { LeaveService } from '../leave/leave.service';
 
 const CUTOFF_MINUTES = 30;
 
@@ -27,6 +28,7 @@ export class AppointmentsService {
     private slotRepo: Repository<Slot>,
     private doctorService: DoctorService,
     private notificationsService: NotificationsService,
+    private leaveService: LeaveService,
   ) {}
 
   private trimTime(time: string): string {
@@ -62,6 +64,107 @@ export class AppointmentsService {
     return d.toISOString().split('T')[0];
   }
 
+  // ── Day 20: Booking date validation ──────────────────────
+
+  private async validateBookingDate(
+    doctor: DoctorProfile,
+    date: string,
+  ): Promise<void> {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const targetDate = new Date(date + 'T00:00:00');
+    const todayDate = new Date(todayStr + 'T00:00:00');
+
+    if (targetDate < todayDate) {
+      throw new BadRequestException(
+        'Cannot book appointments for past dates.',
+      );
+    }
+
+    if (date === todayStr) {
+      return;
+    }
+
+    if (!doctor.allowFutureBooking) {
+      throw new BadRequestException(
+        'This doctor only accepts same-day appointments. Future bookings are not allowed.',
+      );
+    }
+
+    const maxDays = doctor.maxFutureBookingDays ?? 7;
+    const diffMs = targetDate.getTime() - todayDate.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays > maxDays) {
+      throw new BadRequestException(
+        `Booking is only allowed up to ${maxDays} days in advance. You tried to book ${diffDays} days ahead.`,
+      );
+    }
+  }
+
+  // ── Day 19: Booking window check ─────────────────────────
+
+  private async isWithinBookingWindow(
+    doctorId: string,
+    date: string,
+  ): Promise<{ allowed: boolean; reason?: string }> {
+    const now = new Date();
+
+    const slots = await this.slotRepo
+      .createQueryBuilder('slot')
+      .where('slot.doctorId = :doctorId', { doctorId })
+      .andWhere('slot.date = :date', { date })
+      .orderBy('slot.startTime', 'ASC')
+      .getMany();
+
+    if (slots.length === 0) {
+      return {
+        allowed: false,
+        reason: 'No availability found for today',
+      };
+    }
+
+    const startTimes = slots.map(s => s.startTime.substring(0, 5));
+    const endTimes = slots.map(s => s.endTime.substring(0, 5));
+
+    const earliestStart = startTimes.sort()[0];
+    const latestEnd = endTimes.sort().reverse()[0];
+
+    const [startH, startM] = earliestStart.split(':').map(Number);
+    const [endH, endM] = latestEnd.split(':').map(Number);
+
+    const bookingOpenMinutes = startH * 60 + startM - 120;
+    const bookingOpenH = Math.floor(bookingOpenMinutes / 60);
+    const bookingOpenM = bookingOpenMinutes % 60;
+    const bookingOpenStr =
+      `${String(bookingOpenH).padStart(2, '0')}:${String(bookingOpenM).padStart(2, '0')}`;
+
+    const bookingCloseMinutes = endH * 60 + endM - 60;
+    const bookingCloseH = Math.floor(bookingCloseMinutes / 60);
+    const bookingCloseM = bookingCloseMinutes % 60;
+    const bookingCloseStr =
+      `${String(bookingCloseH).padStart(2, '0')}:${String(bookingCloseM).padStart(2, '0')}`;
+
+    const nowStr =
+      `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    if (nowStr < bookingOpenStr) {
+      return {
+        allowed: false,
+        reason: `Booking window has not opened yet. Booking opens at ${bookingOpenStr} (2 hours before consultation starts at ${earliestStart}).`,
+      };
+    }
+
+    if (nowStr >= bookingCloseStr) {
+      return {
+        allowed: false,
+        reason: `Booking window is closed. Booking closed at ${bookingCloseStr} (1 hour before consultation ends at ${latestEnd}).`,
+      };
+    }
+
+    return { allowed: true };
+  }
+
   // ── Booking ────────────────────────────────────────────────
 
   async create(
@@ -70,11 +173,23 @@ export class AppointmentsService {
   ): Promise<Appointment> {
     const doctor = await this.doctorService.findById(dto.doctorId);
 
-    // Day 18: Booking Window - only today's date allowed
-    if (!this.isToday(dto.date)) {
+    // Day 20: Flexible booking date validation
+    await this.validateBookingDate(doctor, dto.date);
+
+    // Day 21: Doctor leave check
+    const onLeave = await this.leaveService.isOnLeave(doctor.id, dto.date);
+    if (onLeave) {
       throw new BadRequestException(
-        'Appointments can only be booked for today. Past and future dates are not allowed.',
+        'Doctor is unavailable on this date. Please select another available date.',
       );
+    }
+
+    // Day 19: Booking window check (today only)
+    if (this.isToday(dto.date)) {
+      const windowCheck = await this.isWithinBookingWindow(doctor.id, dto.date);
+      if (!windowCheck.allowed) {
+        throw new BadRequestException(windowCheck.reason);
+      }
     }
 
     if (!this.isFutureDateTime(dto.date, dto.startTime)) {
@@ -592,7 +707,7 @@ export class AppointmentsService {
     return updated;
   }
 
-  // ── Suggest next available slot/wave (used in reschedule) ─
+  // ── Suggest next available ────────────────────────────────
 
   private async findNextAvailable(
     doctorId: string,
