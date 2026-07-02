@@ -20,6 +20,8 @@ import { SchedulingModule } from './scheduling/scheduling.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/notification.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LeaveModule } from './leave/leave.module';
+import { DoctorLeave } from './leave/leave.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -29,7 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         url: config.get('DATABASE_URL'),
-        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability, Slot, Appointment, Notification],
+        entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability, Slot, Appointment, Notification, DoctorLeave],
         synchronize: false,
         ssl: false,
       }),
@@ -44,6 +46,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     SchedulingModule,
     NotificationsModule,
     ScheduleModule.forRoot(),
+    LeaveModule,
   ],
   controllers: [AppController],
 })
