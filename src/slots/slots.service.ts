@@ -1,10 +1,10 @@
 import {
   Injectable, NotFoundException,
-  BadRequestException,
+  BadRequestException, Inject, forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Slot, SlotStatus } from './slot.entity';
+import { Slot, SlotStatus, SlotType } from './slot.entity';
 import { GenerateSlotsDto } from './dto/generate-slots.dto';
 import { DoctorService } from '../doctor/doctor.service';
 import { AvailabilityService } from '../availability/availability.service';
@@ -15,6 +15,7 @@ export class SlotsService {
     @InjectRepository(Slot)
     private slotRepo: Repository<Slot>,
     private doctorService: DoctorService,
+    @Inject(forwardRef(() => AvailabilityService))
     private availabilityService: AvailabilityService,
   ) {}
 
