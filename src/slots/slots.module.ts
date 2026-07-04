@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Slot } from './slot.entity';
 import { SlotsService } from './slots.service';
@@ -10,7 +10,7 @@ import { AvailabilityModule } from '../availability/availability.module';
   imports: [
     TypeOrmModule.forFeature([Slot]),
     DoctorModule,
-    AvailabilityModule,
+    forwardRef(() => AvailabilityModule),
   ],
   providers: [SlotsService],
   controllers: [SlotsController],
